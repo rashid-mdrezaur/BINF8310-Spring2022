@@ -1,0 +1,155 @@
+---
+title: "Lab02"
+author: "Rezaur Rashid"
+date: "Date: 2/9/2022"
+output: pdf_document
+---
+
+## 01. LAB02 - Problem#1 - Part 1
+
+```{r}
+data = c(2,3,2,6,3,5,6,2,6,6,2,6,6,2,3,6,6,6,5,6,6,5,6,6,6,6,6,4,6,3,3,3,6,6,5,6,6)
+
+dieLoadPrior = c(0.01, 0.99)
+
+dieLoadLL = c(.1,.1,.1,.1,.1,.5)
+dieFairLL = c(1/6,1/6,1/6,1/6,1/6,1/6)
+
+dieLoadPost = vector()
+
+titleStr = ""
+for (i in 1:length(data)) {
+  dieLoadPost[i] = dieLoadPrior[1]
+  
+  dnorm = dieLoadPrior[1]*dieLoadLL[data[i]] + dieLoadPrior[2]*dieFairLL[data[i]]
+  
+  dieLoadPrior[1] = (dieLoadPrior[1]*dieLoadLL[data[i]])/dnorm
+  dieLoadPrior[2] = (dieLoadPrior[2]*dieFairLL[data[i]])/dnorm
+  
+  # titleStr = paste(titleStr,data[i], sep="")
+  # plot(1:i,dieLoadPost, main = titleStr, ylim = c(0,1), xlim = c(1, length(data)+1))
+  # Sys.sleep(.1)
+}
+```
+
+![Problem#1, part#1: Plotting the loaded die rolling for the given rolling data](images/lab02prob01part01.png)
+
+
+## 01. LAB02 - Problem#1 - Part 2
+### The following average is reported for 50 trials.
+
+```{r}
+count = vector()
+
+for (i in 1:50) {
+  dieLoadPrior = c(0.01, 0.99)
+  
+  dieLoadLL = c(.1,.1,.1,.1,.1,.5)
+  dieFairLL = c(1/6,1/6,1/6,1/6,1/6,1/6)
+  
+  ct = 0
+  while (TRUE) {
+    
+    roll = sample(1:6,1,prob= c(.1,.1,.1,.1,.1,.5))
+    
+    dieLoadPost = dieLoadPrior[1]
+    
+    dnorm = dieLoadPrior[1]*dieLoadLL[roll] + dieLoadPrior[2]*dieFairLL[roll]
+    
+    dieLoadPrior[1] = (dieLoadPrior[1]*dieLoadLL[roll])/dnorm
+    dieLoadPrior[2] = (dieLoadPrior[2]*dieFairLL[roll])/dnorm
+    ct = ct + 1
+    if (dieLoadPost >= 0.99999){
+      count[i] = ct
+      break
+    }
+  }
+}
+
+avgTime = ceiling(mean(count))
+print(paste('On avg we have to roll the loaded die',avgTime,'times'))
+```
+
+## 01. LAB02 - Problem#2 - Part 1
+### For patient with the disease, the test has to be run for getting positive result. In this scenerio, we can have two case types: **1. p(Positive|Person has disease) 2. p(Negative|Person has disease)**. The following average is reported for 50 trials.
+
+```{r}
+count = vector()
+
+for (i in 1:50) {
+  ptPosPrior = c(0.001, 0.999)
+  
+  posPtPosLL = c(.91,0.09)
+  posPtNegLL = c(0.16,0.84)
+  
+  ct = 0
+  while (TRUE) {
+    
+    roll = sample(1:2,1,prob= c(.91,0.09))
+    ptPosPost = ptPosPrior[1]
+    
+    dnorm = ptPosPrior[1]*posPtPosLL[roll] + ptPosPrior[2]*posPtNegLL[roll]
+    
+    ptPosPrior[1] = (ptPosPrior[1]*posPtPosLL[roll])/dnorm
+    ptPosPrior[2] = (ptPosPrior[2]*posPtNegLL[roll])/dnorm
+    ct = ct + 1
+    if (ptPosPost >= 0.99999){
+      count[i] = ct
+      break
+    }
+  }
+}
+
+avgTime = ceiling(mean(count))
+cat('For a patient with the disease,\non avg the test needs to be repeated',avgTime,'times')
+```
+
+## 01. LAB02 - Problem#2 - Part 2
+### For patient without the disease, the test has to be run for getting negative result. In this scenerio, we can have two case types: **1. p(Positive|Person doesn't have disease) 2. p(Negative|Person doesn't have disease)**. The following average is reported for 50 trials.
+
+```{r}
+count = vector()
+
+for (i in 1:50) {
+  ptPosPrior = c(0.001, 0.999)
+  
+  posPtPosLL = c(.91,0.09)
+  posPtNegLL = c(0.16,0.84)
+  
+  ct = 0
+  while (TRUE) {
+    
+    roll = sample(1:2,1,prob= c(0.16,0.84))
+    ptPosPost = ptPosPrior[2]
+    
+    dnorm = ptPosPrior[1]*posPtPosLL[roll] + ptPosPrior[2]*posPtNegLL[roll]
+    
+    ptPosPrior[1] = (ptPosPrior[1]*posPtPosLL[roll])/dnorm
+    ptPosPrior[2] = (ptPosPrior[2]*posPtNegLL[roll])/dnorm
+    ct = ct + 1
+    if (ptPosPost >= 0.99999){
+      count[i] = ct
+      break
+    }
+  }
+}
+
+avgTime = ceiling(mean(count))
+cat('For a patient without the disease,\non avg the test needs to be repeated',avgTime,'times')
+```
+
+
+## 01. LAB02 - Problem#2 - Part 3
+The hospital plans to run the test on one million (1M) patients per year. They have a diagnostic test for the disease with a known background prevalence of 0.1%. 
+
+Therefore, 0.1% of 1M = 1000 persons may have the disease.
+Similarly, 99.9% of 1M = 999,000 persons may not have the disease.
+
+From, part#2 we learn, it takes on avg 15 repeated test to achieve hospital requirement if the person has disease and it takes on avg 5 test if the person doesn't have the disease.
+
+Therefore, total number of tests required for 1M patients are:
+          = (1000 x 15) + (999,000 x 5)
+          = 5,010,000
+          = 5M test (approx.)
+          
+Since, each test cost \$1, the hospital budget should be around \$5M. 
