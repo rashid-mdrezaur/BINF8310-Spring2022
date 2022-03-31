@@ -101,4 +101,6 @@ pValue_adj = p.adjust(p_value, method = 'BH')
 sum(pValue_adj <= 0.1)
 ```
 
-The p_values before applying p.adjust() do not seems to entirely uniformly distributed since we can see a peak at pvalue = 0.0.
+The p_values before applying p.adjust() do not seem to be entirely uniformly distributed since we can see a peak at pvalue = 0.0 but other then these few samples they look uniform.
+
+Since most of the samples are uniformly distributed, we can say that other then some specific samples the microbial community does not have influence to the body weight. 
