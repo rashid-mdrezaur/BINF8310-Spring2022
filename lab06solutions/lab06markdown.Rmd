@@ -141,3 +141,5 @@ boxplot( as.numeric( myTNorm[ myFrame$index[1],]) ~ cats_A_C, main = 'Graph: Mod
 ```
 
 ## Problem (E): Model Evaluation
+
+Overall, we think the two-parameter reduced model is appropriate for these data. For these data, we think the interceptor is not that significant compared to the slope therefore we can assume that the interception term is zero and adding more degrees of freedom doesn't produce better results. Therefore, a reduced model is more appropiate.
